@@ -14,17 +14,15 @@ import { IPlayerDTO } from "../interfaces/entities/PlayersDTO";
 import { useRef, useState } from "react";
 import { ChooseFirstPlayer } from "./ChooseFirstPlayer";
 import { StandardButton } from "./StandardButton";
-import {
-  readFromLocalStorage,
-  writeInLocalStorage,
-} from "@/utils/localStorageShorthands";
+import { usePlayersContext } from "@/contexts/players-context";
 
 export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
-  const storedPlayers = readFromLocalStorage("LOCAL_STORAGE_PLAYERS_KEY") ?? [];
+  console.log("opening?");
+
+  const { players, currentDealer, addPlayer } = usePlayersContext();
 
   const [error, setError] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [players, setPlayers] = useState<IPlayerDTO[]>(storedPlayers);
 
   const playerInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,7 +30,7 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
     setIsDialogOpen(false);
   }
 
-  function addPlayer() {
+  function handleAddPlayer() {
     setError("");
 
     if (!playerInputRef.current?.value) return;
@@ -48,13 +46,10 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
     const newPlayerData: IPlayerDTO = {
       id,
       name: inputValue,
+      livesLost: 0,
     };
 
-    const allPlayers = [...players, newPlayerData];
-
-    writeInLocalStorage("LOCAL_STORAGE_PLAYERS_KEY", players);
-
-    setPlayers(allPlayers);
+    addPlayer(newPlayerData);
 
     playerInputRef.current.value = "";
     playerInputRef.current.focus();
@@ -65,6 +60,7 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent
+        forceMount
         aria-describedby={undefined}
         className="bg-main-bg pt-10 overflow-y-auto"
       >
@@ -79,7 +75,11 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
             {players.map((player) => (
               <div
                 key={player.id}
-                className="bg-content-box-bg px-5 py-1 rounded-lg"
+                className={`px-5 py-1 rounded-lg ${
+                  player.id === currentDealer?.id
+                    ? "bg-selected-player-green border-button-green-hover"
+                    : "bg-content-box-bg border-transparent"
+                }`}
               >
                 {player.name}
               </div>
@@ -98,7 +98,7 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
               autoFocus={false}
               className="rounded-none flex-1 outline-0 border-none bg-input-bg placeholder:text-placeholder"
             />
-            <StandardButton onClick={addPlayer} className="rounded-none">
+            <StandardButton onClick={handleAddPlayer} className="rounded-none">
               Botar na roda
             </StandardButton>
           </div>

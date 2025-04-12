@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ContextProviders } from "@/contexts/Providers";
 
 export const metadata: Metadata = {
   title: "Danadinha",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="max-w-[450px] bg-linear-to-b from-[#3B3B3B] to-[#717070] px-4 pt-14 text-gray-200">
-        {children}
+        <ContextProviders>{children}</ContextProviders>
       </body>
     </html>
   );

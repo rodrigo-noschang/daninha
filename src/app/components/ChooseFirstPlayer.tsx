@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -6,28 +8,20 @@ import {
 } from "@/components/ui/dialog";
 import { IChooseFirstPlayerProps } from "../interfaces/props/ChooseFirstPlayerProps";
 import { useState } from "react";
-import { IPlayerDTO } from "../interfaces/entities/PlayersDTO";
 import { StandardButton } from "./StandardButton";
-import { writeInLocalStorage } from "@/utils/localStorageShorthands";
+import { usePlayersContext } from "@/contexts/players-context";
 
 export function ChooseFirstPlayer({
   children,
   players,
   closeBaseDialog,
 }: IChooseFirstPlayerProps) {
-  const [chosenPlayer, setChosenPlayer] = useState<IPlayerDTO | null>(null);
+  const { currentDealer, chooseDealer } = usePlayersContext();
+
   const [error, setError] = useState("");
 
-  function selectCurrentDealer(player: IPlayerDTO) {
-    if (!player) return;
-
-    setChosenPlayer(player);
-
-    writeInLocalStorage("LOCAL_STORAGE_CURRENT_DEALER_KEY", player);
-  }
-
   function returnHome() {
-    if (chosenPlayer) {
+    if (currentDealer) {
       closeBaseDialog();
     } else {
       setError("Escolha alguém para começar dando as cartas!");
@@ -50,12 +44,12 @@ export function ChooseFirstPlayer({
             <div className="flex gap-5 items-center flex-wrap mt-6">
               {players.map((player) => (
                 <div
-                  onClick={() => selectCurrentDealer(player)}
+                  onClick={() => chooseDealer(player)}
                   key={player.id}
                   className={`
                     px-5 py-1 rounded-lg border-2
                     ${
-                      player.id === chosenPlayer?.id
+                      player.id === currentDealer?.id
                         ? "bg-selected-player-green border-button-green-hover"
                         : "bg-content-box-bg border-transparent"
                     }`}
@@ -71,7 +65,7 @@ export function ChooseFirstPlayer({
               Comecemos então
             </StandardButton>
 
-            {error && !chosenPlayer && (
+            {error && !currentDealer && (
               <div className="text-error-red text-sm mt-1"> {error} </div>
             )}
           </div>
