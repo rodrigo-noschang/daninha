@@ -20,7 +20,7 @@ import {
 } from "@/utils/localStorageShorthands";
 
 export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
-  const storedPlayers = readFromLocalStorage("LOCAL_STORAGE_PLAYERS_KEY");
+  const storedPlayers = readFromLocalStorage("LOCAL_STORAGE_PLAYERS_KEY") ?? [];
 
   const [error, setError] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -64,7 +64,10 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent aria-describedby={undefined} className="bg-main-bg pt-10">
+      <DialogContent
+        aria-describedby={undefined}
+        className="bg-main-bg pt-10 overflow-y-auto"
+      >
         <DialogTitle className="hidden"></DialogTitle>
 
         <div>
