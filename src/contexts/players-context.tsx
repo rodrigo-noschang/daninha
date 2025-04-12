@@ -13,6 +13,7 @@ interface ContextValues {
   currentDealer: IPlayerDTO | null;
   currentCardsCount: number;
   everybodyGuessed: boolean;
+  losers: IPlayerDTO[];
 
   addPlayer: (player: IPlayerDTO) => void;
   chooseDealer: (player: IPlayerDTO) => void;
@@ -23,6 +24,8 @@ interface ContextValues {
   saveLivesLostInRound: (players: IPlayerDTO[]) => void;
   nextRound: () => void;
   fullReset: () => void;
+  startNewGame: () => void;
+  getWinners: () => IPlayerDTO[];
 }
 
 const PlayersContext = createContext<ContextValues>({
@@ -30,6 +33,7 @@ const PlayersContext = createContext<ContextValues>({
   currentDealer: null,
   currentCardsCount: 1,
   everybodyGuessed: false,
+  losers: [],
   addPlayer: () => {},
   chooseDealer: () => {},
   defineCardsCount: () => {},
@@ -39,6 +43,8 @@ const PlayersContext = createContext<ContextValues>({
   saveLivesLostInRound: () => {},
   nextRound: () => {},
   fullReset: () => {},
+  startNewGame: () => {},
+  getWinners: () => [],
 });
 
 interface IProps {
@@ -46,6 +52,7 @@ interface IProps {
 }
 
 const TOTAL_CARDS = 40;
+const MAX_LIVES = 5;
 
 export function PlayersContextProvider({ children }: IProps) {
   const storedPlayers: IPlayerDTO[] =
@@ -69,6 +76,7 @@ export function PlayersContextProvider({ children }: IProps) {
   const [isIncreasingCards, setIsIncreasingCards] = useState(
     storedIncreasingCards
   );
+  const [losers, setLosers] = useState<IPlayerDTO[]>([]);
 
   const MAX_CARDS_ALLOWED = Math.floor(TOTAL_CARDS / players.length - 1);
 
@@ -123,6 +131,13 @@ export function PlayersContextProvider({ children }: IProps) {
   }
 
   function saveLivesLostInRound(lostLives: IPlayerDTO[]) {
+    const definedLosers = lostLives.filter((player) => {
+      return player.livesLost >= MAX_LIVES;
+    });
+    if (definedLosers.length > 0) {
+      setLosers(definedLosers);
+    }
+
     setPlayers(lostLives);
   }
 
@@ -133,18 +148,11 @@ export function PlayersContextProvider({ children }: IProps) {
     const currentDealerIndex = players.findIndex((player) => {
       return player.id === currentDealer?.id;
     });
-    console.log(
-      "🚀 ~ currentDealerIndex ~ currentDealerIndex:",
-      currentDealerIndex
-    );
 
     const nextDealerIndex =
       currentDealerIndex >= players.length - 1 ? 0 : currentDealerIndex + 1;
 
-    console.log("next dealer inder - ", nextDealerIndex);
     const nextDealer = players[nextDealerIndex];
-
-    console.log("next dealer - ", nextDealer);
 
     setCurrentDealer(nextDealer);
 
@@ -191,11 +199,64 @@ export function PlayersContextProvider({ children }: IProps) {
     writeInCookies("LOCAL_STORAGE_INCREASING_CARDS", newIsIncreasingCards);
   }
 
+  function getWinners() {
+    const lowestLivesLost = players.reduce((acc, player) => {
+      return player.livesLost < acc && player.livesLost < MAX_LIVES
+        ? player.livesLost
+        : acc;
+    }, Math.min(MAX_LIVES, players[0].livesLost));
+
+    const winners = players.filter(
+      (player) => player.livesLost === lowestLivesLost
+    );
+
+    return winners;
+  }
+
+  function startNewGame() {
+    setEverybodyGuessed(false);
+    setLosers([]);
+
+    // update dealer
+    const currentDealerIndex = players.findIndex((player) => {
+      return player.id === currentDealer?.id;
+    });
+
+    const nextDealerIndex =
+      currentDealerIndex >= players.length - 1 ? 0 : currentDealerIndex + 1;
+
+    const nextDealer = players[nextDealerIndex];
+
+    setCurrentDealer(nextDealer);
+
+    // reset guesses
+    const restartedGuessesAndLives = players.map((player) => {
+      return {
+        ...player,
+        currentGuess: 0,
+        livesLost: 0,
+      };
+    });
+
+    setPlayers(restartedGuessesAndLives);
+
+    // update cards amount
+    setIsIncreasingCards(true);
+    setCurrentCardsCount(1);
+
+    writeInCookies("LOCAL_STORAGE_CURRENT_CARDS", 1);
+    writeInCookies("LOCAL_STORAGE_GUESSES_DONE", false);
+    writeInCookies("LOCAL_STORAGE_CURRENT_DEALER_KEY", nextDealer);
+    writeInCookies("LOCAL_STORAGE_PLAYERS_KEY", restartedGuessesAndLives);
+    writeInCookies("LOCAL_STORAGE_INCREASING_CARDS", true);
+  }
+
   function fullReset() {
     setEverybodyGuessed(false);
     setCurrentDealer(null);
     setPlayers([]);
     setCurrentCardsCount(1);
+    setLosers([]);
 
     clearCookies();
   }
@@ -207,6 +268,7 @@ export function PlayersContextProvider({ children }: IProps) {
         currentDealer,
         currentCardsCount,
         everybodyGuessed,
+        losers,
         addPlayer,
         chooseDealer,
         defineCardsCount,
@@ -216,6 +278,8 @@ export function PlayersContextProvider({ children }: IProps) {
         saveLivesLostInRound,
         nextRound,
         fullReset,
+        startNewGame,
+        getWinners,
       }}
     >
       {children}

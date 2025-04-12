@@ -16,18 +16,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { FinalOfMatchSummary } from "./components/FinalOfMatchSummary";
 
 export default function Home() {
-  const { players, everybodyGuessed, fullReset } = usePlayersContext();
+  const { players, everybodyGuessed, fullReset, losers } = usePlayersContext();
 
   const clientPlayers = players ?? [];
 
   return (
     <div className="min-h-dvh pb-20">
+      <FinalOfMatchSummary />
+
       <PageHeader />
 
       <RegisterPlayersForm>
         <Button
+          disabled={!!losers.length}
           className={
             "bg-button-green rounded-lg hover:bg-button-green-hover active:bg-button-green-hover w-full mt-4"
           }
@@ -44,7 +48,7 @@ export default function Home() {
           {everybodyGuessed && (
             <div className="mt-8">
               <ResultsForm>
-                <StandardButton className="w-full">
+                <StandardButton className="w-full" disabled={!!losers.length}>
                   Qual foi o resultado do fodódromo?
                 </StandardButton>
               </ResultsForm>

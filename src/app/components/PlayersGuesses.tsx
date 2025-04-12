@@ -9,6 +9,7 @@ export function PlayersGuesses() {
     currentDealer,
     currentCardsCount,
     everybodyGuessed,
+    losers,
     sortPlayersAccordingToRound,
   } = usePlayersContext();
 
@@ -25,7 +26,7 @@ export function PlayersGuesses() {
 
       <div className="mt-5">
         <RegisterGuessesForm>
-          <StandardButton className="w-full">
+          <StandardButton className="w-full" disabled={!!losers.length}>
             Registrar os palpites 🤔
           </StandardButton>
         </RegisterGuessesForm>

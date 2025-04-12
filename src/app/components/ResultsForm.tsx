@@ -45,7 +45,9 @@ export function ResultsForm({ children }: IResultsFormProps) {
         </div>
 
         <div>
-          <StandardButton onClick={finishRound}>Vida que segue</StandardButton>
+          <StandardButton className="w-full" onClick={finishRound}>
+            Vida que segue
+          </StandardButton>
         </div>
       </DialogContent>
     </Dialog>

@@ -7,11 +7,6 @@ export type KeyType = keyof typeof ALL_KEYS;
 export function writeInCookies(key: KeyType, data: any) {
   const keyValue = ALL_KEYS[key];
 
-  if (key === "LOCAL_STORAGE_CURRENT_DEALER_KEY") {
-    console.log("key - ", key);
-    console.log("data - ", data);
-  }
-
   Cookies.set(keyValue, JSON.stringify(data));
 }
 
@@ -24,8 +19,6 @@ export function readFromCookies(key: KeyType) {
 
 export function clearCookies() {
   for (const cookieKey of Object.values(ALL_KEYS)) {
-    console.log(cookieKey);
-
     Cookies.remove(cookieKey);
   }
   
