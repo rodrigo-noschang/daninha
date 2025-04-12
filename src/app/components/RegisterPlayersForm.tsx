@@ -45,6 +45,7 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
       id,
       name: inputValue,
       livesLost: 0,
+      currentGuess: 0,
     };
 
     addPlayer(newPlayerData);

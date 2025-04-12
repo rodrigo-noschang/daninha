@@ -8,19 +8,27 @@ interface ContextValues {
   players: IPlayerDTO[];
   currentDealer: IPlayerDTO | null;
   currentCardsCount: number;
+  everybodyGuessed: boolean;
 
   addPlayer: (player: IPlayerDTO) => void;
   chooseDealer: (player: IPlayerDTO) => void;
   defineCardsCount: (count: number) => void;
+  setPlayerCurrentGuest: (playerId: string, guess: number) => void;
+  finishGuesses: () => void;
+  sortPlayersAccordingToRound: () => IPlayerDTO[];
 }
 
 const PlayersContext = createContext<ContextValues>({
   players: [],
   currentDealer: null,
   currentCardsCount: 1,
+  everybodyGuessed: false,
   addPlayer: () => {},
   chooseDealer: () => {},
   defineCardsCount: () => {},
+  setPlayerCurrentGuest: () => {},
+  finishGuesses: () => {},
+  sortPlayersAccordingToRound: () => [],
 });
 
 interface IProps {
@@ -34,6 +42,8 @@ export function PlayersContextProvider({ children }: IProps) {
     readFromCookies("LOCAL_STORAGE_CURRENT_DEALER_KEY") || null;
   const storedCardsCount: number =
     readFromCookies("LOCAL_STORAGE_CURRENT_CARDS") ?? 1;
+  const storedGuessesStatus =
+    readFromCookies("LOCAL_STORAGE_GUESSES_DONE") ?? false;
 
   const [players, setPlayers] = useState<IPlayerDTO[]>(storedPlayers);
   const [currentDealer, setCurrentDealer] = useState<IPlayerDTO | null>(
@@ -41,6 +51,7 @@ export function PlayersContextProvider({ children }: IProps) {
   );
   const [currentCardsCount, setCurrentCardsCount] =
     useState<number>(storedCardsCount);
+  const [everybodyGuessed, setEverybodyGuessed] = useState(storedGuessesStatus);
 
   function addPlayer(player: IPlayerDTO) {
     const withNewPlayer = [...players, player];
@@ -66,15 +77,50 @@ export function PlayersContextProvider({ children }: IProps) {
     writeInCookies("LOCAL_STORAGE_CURRENT_CARDS", count);
   }
 
+  function setPlayerCurrentGuest(playerId: string, guess: number) {
+    const playerGuessing = players.find((player) => player.id === playerId);
+
+    if (!playerGuessing) return;
+
+    playerGuessing.currentGuess = guess;
+
+    writeInCookies("LOCAL_STORAGE_PLAYERS_KEY", players);
+  }
+
+  function finishGuesses() {
+    writeInCookies("LOCAL_STORAGE_GUESSES_DONE", true);
+
+    setEverybodyGuessed(true);
+  }
+
+  function sortPlayersAccordingToRound(): IPlayerDTO[] {
+    const currentDealerIndex = players.findIndex(
+      (player) => player.id === currentDealer?.id
+    );
+
+    const firstPlayerIndex =
+      currentDealerIndex >= players.length ? 0 : currentDealerIndex + 1;
+
+    const firstPlayers = players.slice(firstPlayerIndex);
+    const restOfLine = players.slice(0, firstPlayerIndex);
+
+    const sortedPlayers = [...firstPlayers, ...restOfLine];
+    return sortedPlayers;
+  }
+
   return (
     <PlayersContext.Provider
       value={{
         players,
         currentDealer,
         currentCardsCount,
+        everybodyGuessed,
         addPlayer,
         chooseDealer,
         defineCardsCount,
+        setPlayerCurrentGuest,
+        finishGuesses,
+        sortPlayersAccordingToRound,
       }}
     >
       {children}

@@ -2,9 +2,17 @@
 
 import { usePlayersContext } from "@/contexts/players-context";
 import { StandardButton } from "./StandardButton";
+import { RegisterGuessesForm } from "./RegisterGuessesForm";
 
 export function PlayersGuesses() {
-  const { currentDealer, currentCardsCount } = usePlayersContext();
+  const {
+    currentDealer,
+    currentCardsCount,
+    everybodyGuessed,
+    sortPlayersAccordingToRound,
+  } = usePlayersContext();
+
+  const sortedPlayers = sortPlayersAccordingToRound();
 
   return (
     <div className="mt-8 pt-5 border-t-2 border-main-border">
@@ -16,10 +24,31 @@ export function PlayersGuesses() {
       </div>
 
       <div className="mt-5">
-        <StandardButton className="w-full">
-          Registrar os palpites 🤔
-        </StandardButton>
+        <RegisterGuessesForm>
+          <StandardButton className="w-full">
+            Registrar os palpites 🤔
+          </StandardButton>
+        </RegisterGuessesForm>
       </div>
+
+      {everybodyGuessed && (
+        <div className="flex flex-wrap gap-3 mt-6 justify-around">
+          {sortedPlayers.map((player) => (
+            <div
+              key={player.id}
+              className="px-3 py-1 rounded-lg bg-content-box-bg flex items-center justify-between w-[100px]"
+            >
+              <div>
+                <div className="mr-4 text-lg"> {player.name} </div>
+              </div>
+
+              <div className="bg-input-bg rounded-md px-3 py-1 mx-1">
+                {player.currentGuess}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
