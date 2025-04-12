@@ -14,6 +14,7 @@ interface ContextValues {
   currentCardsCount: number;
   everybodyGuessed: boolean;
   losers: IPlayerDTO[];
+  choseToRestart: boolean;
 
   addPlayer: (player: IPlayerDTO) => void;
   chooseDealer: (player: IPlayerDTO) => void;
@@ -24,8 +25,9 @@ interface ContextValues {
   saveLivesLostInRound: (players: IPlayerDTO[]) => void;
   nextRound: () => void;
   fullReset: () => void;
-  startNewGame: () => void;
+  startNewGame: (winnersIds: string[]) => void;
   getWinners: () => IPlayerDTO[];
+  setChoseToRestart: (a: boolean) => void;
 }
 
 const PlayersContext = createContext<ContextValues>({
@@ -34,6 +36,7 @@ const PlayersContext = createContext<ContextValues>({
   currentCardsCount: 1,
   everybodyGuessed: false,
   losers: [],
+  choseToRestart: false,
   addPlayer: () => {},
   chooseDealer: () => {},
   defineCardsCount: () => {},
@@ -43,8 +46,9 @@ const PlayersContext = createContext<ContextValues>({
   saveLivesLostInRound: () => {},
   nextRound: () => {},
   fullReset: () => {},
-  startNewGame: () => {},
+  startNewGame: ([]) => {},
   getWinners: () => [],
+  setChoseToRestart: () => {},
 });
 
 interface IProps {
@@ -77,7 +81,9 @@ export function PlayersContextProvider({ children }: IProps) {
     storedIncreasingCards
   );
   const [losers, setLosers] = useState<IPlayerDTO[]>([]);
+  const [choseToRestart, setChoseToRestart] = useState(false);
 
+  console.log("🚀 ~ PlayersContextProvider ~ players:", players);
   const MAX_CARDS_ALLOWED = Math.floor(TOTAL_CARDS / players.length - 1);
 
   function addPlayer(player: IPlayerDTO) {
@@ -215,7 +221,7 @@ export function PlayersContextProvider({ children }: IProps) {
     return winners;
   }
 
-  function startNewGame() {
+  function startNewGame(winnerIds: string[]) {
     setEverybodyGuessed(false);
     setLosers([]);
 
@@ -237,6 +243,7 @@ export function PlayersContextProvider({ children }: IProps) {
         ...player,
         currentGuess: 0,
         livesLost: 0,
+        isLastWinner: winnerIds.includes(player.id),
       };
     });
 
@@ -245,6 +252,7 @@ export function PlayersContextProvider({ children }: IProps) {
     // update cards amount
     setIsIncreasingCards(true);
     setCurrentCardsCount(1);
+    setChoseToRestart(false);
 
     writeInCookies("LOCAL_STORAGE_CURRENT_CARDS", 1);
     writeInCookies("LOCAL_STORAGE_GUESSES_DONE", false);
@@ -271,6 +279,7 @@ export function PlayersContextProvider({ children }: IProps) {
         currentCardsCount,
         everybodyGuessed,
         losers,
+        choseToRestart,
         addPlayer,
         chooseDealer,
         defineCardsCount,
@@ -282,6 +291,7 @@ export function PlayersContextProvider({ children }: IProps) {
         fullReset,
         startNewGame,
         getWinners,
+        setChoseToRestart,
       }}
     >
       {children}

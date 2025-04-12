@@ -3,12 +3,18 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePlayersContext } from "@/contexts/players-context";
 import { StandardButton } from "./StandardButton";
-import { useState } from "react";
+import { readFromCookies, writeInCookies } from "@/utils/cookiesStorage";
+import { IRankingDTO } from "../interfaces/entities/RankingDTO";
 
 export function FinalOfMatchSummary() {
-  const { players, losers, getWinners, startNewGame } = usePlayersContext();
-
-  const [choseToRestart, setChoseToRestart] = useState(false);
+  const {
+    players,
+    losers,
+    choseToRestart,
+    getWinners,
+    startNewGame,
+    setChoseToRestart,
+  } = usePlayersContext();
 
   const winners = getWinners();
 
@@ -21,8 +27,56 @@ export function FinalOfMatchSummary() {
     .sort((a, b) => (a?.livesLost ?? 0) - (b?.livesLost ?? 0));
 
   function handleRestartGame() {
-    startNewGame();
+    const currentRanking = (readFromCookies("LOCAL_STORAGE_RANKING") ??
+      []) as IRankingDTO[];
+
+    const winnersIds = [];
+
+    for (const winner of winners) {
+      const winnerRanking = currentRanking.find(
+        (ranking) => ranking.playerId === winner.id
+      );
+
+      if (!winnerRanking) continue;
+
+      winnerRanking.victories += 1;
+      winnerRanking.totalLivesLost += winner.livesLost;
+      winnerRanking.lastWinner = true;
+
+      winnersIds.push(winner.id);
+    }
+
+    for (const loser of losers) {
+      const loserRanking = currentRanking.find(
+        (ranking) => ranking.playerId === loser.id
+      );
+
+      if (!loserRanking) continue;
+
+      loserRanking.defeats += 1;
+      loserRanking.totalLivesLost += loser.livesLost;
+      loserRanking.lastWinner = false;
+
+      loser.isLastWinner = false;
+    }
+
+    for (const normie of restPlayers) {
+      const normieRanking = currentRanking.find(
+        (ranking) => ranking.playerId === normie.id
+      );
+
+      if (!normieRanking) continue;
+
+      normieRanking.totalLivesLost += normie.livesLost;
+      normieRanking.lastWinner = false;
+
+      normie.isLastWinner = false;
+    }
+
+    writeInCookies("LOCAL_STORAGE_RANKING", currentRanking);
+
     setChoseToRestart(true);
+    startNewGame(winnersIds);
   }
 
   return (

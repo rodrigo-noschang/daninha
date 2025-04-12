@@ -15,6 +15,8 @@ import { useRef, useState } from "react";
 import { ChooseFirstPlayer } from "./ChooseFirstPlayer";
 import { StandardButton } from "./StandardButton";
 import { usePlayersContext } from "@/contexts/players-context";
+import { IRankingDTO } from "../interfaces/entities/RankingDTO";
+import { readFromCookies, writeInCookies } from "@/utils/cookiesStorage";
 
 export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
   const { players, currentDealer, addPlayer } = usePlayersContext();
@@ -40,15 +42,31 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
       return;
     }
 
-    const id = uuidv4() as string;
+    const playerId = uuidv4() as string;
+    const rankingId = uuidv4() as string;
+
     const newPlayerData: IPlayerDTO = {
-      id,
+      id: playerId,
       name: inputValue,
       livesLost: 0,
       currentGuess: 0,
+      isLastWinner: false,
+    };
+
+    const newRanking: IRankingDTO = {
+      id: rankingId,
+      defeats: 0,
+      victories: 0,
+      totalLivesLost: 0,
+      playerId,
+      player: newPlayerData,
+      lastWinner: false,
     };
 
     addPlayer(newPlayerData);
+
+    const currentRanking = readFromCookies("LOCAL_STORAGE_RANKING") ?? [];
+    writeInCookies("LOCAL_STORAGE_RANKING", [...currentRanking, newRanking]);
 
     playerInputRef.current.value = "";
     playerInputRef.current.focus();

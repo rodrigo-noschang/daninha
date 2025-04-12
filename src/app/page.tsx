@@ -17,11 +17,25 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FinalOfMatchSummary } from "./components/FinalOfMatchSummary";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { readFromCookies } from "@/utils/cookiesStorage";
+import { IRankingDTO } from "./interfaces/entities/RankingDTO";
 
 export default function Home() {
   const { players, everybodyGuessed, fullReset, losers } = usePlayersContext();
 
   const clientPlayers = players ?? [];
+  const ranking = (readFromCookies("LOCAL_STORAGE_RANKING") ??
+    []) as IRankingDTO[];
+
+  const sortedRanking = ranking.sort((a, b) => b.victories - a.victories);
 
   return (
     <div className="min-h-dvh pb-20">
@@ -57,7 +71,65 @@ export default function Home() {
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="bg-content-box-bg m-auto mt-40 w-full hover:bg-gray-600">
+              <StandardButton className="w-full mt-40">
+                Ver ranking
+              </StandardButton>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent className="bg-main-bg pt-10 overflow-y-auto">
+              <AlertDialogTitle>Ranking</AlertDialogTitle>
+
+              <div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-placeholder text-center">
+                        Nome
+                      </TableHead>
+                      <TableHead className="text-placeholder text-center">
+                        V
+                      </TableHead>
+                      <TableHead className="text-placeholder text-center">
+                        D
+                      </TableHead>
+                      <TableHead className="text-placeholder text-center">
+                        VP
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {sortedRanking.map((sortedRank) => (
+                      <TableRow key={sortedRank.id}>
+                        <TableCell className="text-center">
+                          {sortedRank.player.name}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {sortedRank.victories}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {sortedRank.defeats}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {sortedRank.totalLivesLost}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="flex justify-between mt-3">
+                <AlertDialogCancel className="text-black">
+                  Fechar
+                </AlertDialogCancel>
+              </div>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="bg-content-box-bg m-auto mt-8 w-full hover:bg-gray-600">
                 Reiniciar a porra toda
               </Button>
             </AlertDialogTrigger>
