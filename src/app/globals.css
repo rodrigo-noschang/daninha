@@ -51,6 +51,8 @@
   --color-button-green-hover: #3D9033;
   --color-selected-player-green: #4A9C40;
   --color-error-red: #ff4149;
+  --color-winner-bg: #dcd195;
+  --color-winner-border: #ffd700;
 }
 
 :root {

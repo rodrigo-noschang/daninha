@@ -1,6 +1,7 @@
 "use client";
 
 import { usePlayersContext } from "@/contexts/players-context";
+import { Crown } from "lucide-react";
 
 export function PlayersListWithLives() {
   const { players, currentDealer } = usePlayersContext();
@@ -13,12 +14,21 @@ export function PlayersListWithLives() {
         {players.map((player) => (
           <div
             key={player.id}
-            className={`px-4 py-1 border-2 rounded-md ${
-              currentDealer?.id === player.id
+            className={`px-4 py-1 border-2 rounded-md relative ${
+              player?.isLastWinner
+                ? "border-winner-border"
+                : currentDealer?.id === player.id
                 ? "border-button-green-hover"
                 : "border-main-border"
             }`}
           >
+            {player.isLastWinner && (
+              <Crown
+                size={16}
+                color="#ffd700"
+                className="absolute top-[-18px] left-[50%] translate-x-[-50%]"
+              />
+            )}
             {player.name} - {player?.livesLost ?? 0}
           </div>
         ))}
