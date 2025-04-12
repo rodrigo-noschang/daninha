@@ -3,7 +3,7 @@
 import { usePlayersContext } from "@/contexts/players-context";
 
 export function PlayersListWithLives() {
-  const { players } = usePlayersContext();
+  const { players, currentDealer } = usePlayersContext();
 
   return (
     <div className="mt-10 border-1 border-main-border rounded-lg p-4 bg-main-bg">
@@ -13,7 +13,11 @@ export function PlayersListWithLives() {
         {players.map((player) => (
           <div
             key={player.id}
-            className="px-4 py-1 border-2 border-main-border rounded-md"
+            className={`px-4 py-1 border-2 rounded-md ${
+              currentDealer?.id === player.id
+                ? "border-button-green-hover"
+                : "border-main-border"
+            }`}
           >
             {player.name} - {player.livesLost}
           </div>

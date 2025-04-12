@@ -5,12 +5,15 @@ import { PageHeader } from "./components/PageHeader";
 import { RegisterPlayersForm } from "./components/RegisterPlayersForm";
 import { PlayersListWithLives } from "./components/PlayersListWithLives";
 import { Button } from "@/components/ui/button";
+import { PlayersGuesses } from "./components/PlayersGuesses";
 
 export default function Home() {
   const { players } = usePlayersContext();
 
+  const clientPlayers = players ?? [];
+
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh pb-20">
       <PageHeader />
 
       <RegisterPlayersForm>
@@ -23,9 +26,10 @@ export default function Home() {
         </Button>
       </RegisterPlayersForm>
 
-      {!!players.length && (
+      {!!clientPlayers.length && (
         <div>
           <PlayersListWithLives />
+          <PlayersGuesses />
         </div>
       )}
     </div>

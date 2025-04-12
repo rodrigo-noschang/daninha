@@ -7,16 +7,20 @@ import { createContext, ReactNode, useContext, useState } from "react";
 interface ContextValues {
   players: IPlayerDTO[];
   currentDealer: IPlayerDTO | null;
+  currentCardsCount: number;
 
   addPlayer: (player: IPlayerDTO) => void;
   chooseDealer: (player: IPlayerDTO) => void;
+  defineCardsCount: (count: number) => void;
 }
 
 const PlayersContext = createContext<ContextValues>({
   players: [],
   currentDealer: null,
+  currentCardsCount: 1,
   addPlayer: () => {},
   chooseDealer: () => {},
+  defineCardsCount: () => {},
 });
 
 interface IProps {
@@ -26,12 +30,17 @@ interface IProps {
 export function PlayersContextProvider({ children }: IProps) {
   const storedPlayers: IPlayerDTO[] =
     readFromCookies("LOCAL_STORAGE_PLAYERS_KEY") ?? [];
-  const chosenPlayer: IPlayerDTO | null =
+  const storedChosenPlayer: IPlayerDTO | null =
     readFromCookies("LOCAL_STORAGE_CURRENT_DEALER_KEY") || null;
+  const storedCardsCount: number =
+    readFromCookies("LOCAL_STORAGE_CURRENT_CARDS") ?? 1;
+
   const [players, setPlayers] = useState<IPlayerDTO[]>(storedPlayers);
   const [currentDealer, setCurrentDealer] = useState<IPlayerDTO | null>(
-    chosenPlayer
+    storedChosenPlayer
   );
+  const [currentCardsCount, setCurrentCardsCount] =
+    useState<number>(storedCardsCount);
 
   function addPlayer(player: IPlayerDTO) {
     const withNewPlayer = [...players, player];
@@ -51,9 +60,22 @@ export function PlayersContextProvider({ children }: IProps) {
     writeInCookies("LOCAL_STORAGE_CURRENT_DEALER_KEY", newDealer);
   }
 
+  function defineCardsCount(count: number) {
+    setCurrentCardsCount(count);
+
+    writeInCookies("LOCAL_STORAGE_CURRENT_CARDS", count);
+  }
+
   return (
     <PlayersContext.Provider
-      value={{ players, currentDealer, addPlayer, chooseDealer }}
+      value={{
+        players,
+        currentDealer,
+        currentCardsCount,
+        addPlayer,
+        chooseDealer,
+        defineCardsCount,
+      }}
     >
       {children}
     </PlayersContext.Provider>

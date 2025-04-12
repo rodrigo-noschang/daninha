@@ -17,8 +17,6 @@ import { StandardButton } from "./StandardButton";
 import { usePlayersContext } from "@/contexts/players-context";
 
 export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
-  console.log("opening?");
-
   const { players, currentDealer, addPlayer } = usePlayersContext();
 
   const [error, setError] = useState("");

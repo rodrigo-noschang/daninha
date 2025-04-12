@@ -16,12 +16,13 @@ export function ChooseFirstPlayer({
   players,
   closeBaseDialog,
 }: IChooseFirstPlayerProps) {
-  const { currentDealer, chooseDealer } = usePlayersContext();
+  const { currentDealer, chooseDealer, defineCardsCount } = usePlayersContext();
 
   const [error, setError] = useState("");
 
   function returnHome() {
     if (currentDealer) {
+      defineCardsCount(1);
       closeBaseDialog();
     } else {
       setError("Escolha alguém para começar dando as cartas!");
