@@ -6,11 +6,19 @@ import { StandardButton } from "./StandardButton";
 import { useState } from "react";
 
 export function FinalOfMatchSummary() {
-  const { losers, getWinners, startNewGame } = usePlayersContext();
+  const { players, losers, getWinners, startNewGame } = usePlayersContext();
 
   const [choseToRestart, setChoseToRestart] = useState(false);
 
   const winners = getWinners();
+
+  const losersIds = losers.map((loser) => loser.id);
+  const winnersIds = winners.map((winners) => winners.id);
+  const losersAndWinnersIds = [...losersIds, ...winnersIds];
+
+  const restPlayers = players
+    .filter((player) => !losersAndWinnersIds.includes(player.id))
+    .sort((a, b) => (a.livesLost = b.livesLost));
 
   function handleRestartGame() {
     startNewGame();
@@ -47,6 +55,20 @@ export function FinalOfMatchSummary() {
                 className={"px-4 py-1 border-2 rounded-md  bg-button-green"}
               >
                 {winner.name} - {winner.livesLost}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div> Restoio </div>
+          <div className="flex gap-2">
+            {restPlayers.map((player) => (
+              <div
+                key={player.id}
+                className={"px-4 py-1 border-2 rounded-md  bg-content-box-bg"}
+              >
+                {player.name} - {player.livesLost}
               </div>
             ))}
           </div>
