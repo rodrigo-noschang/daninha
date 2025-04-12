@@ -84,6 +84,7 @@ export function PlayersContextProvider({ children }: IProps) {
 
     playerGuessing.currentGuess = guess;
 
+    setPlayers([...players]);
     writeInCookies("LOCAL_STORAGE_PLAYERS_KEY", players);
   }
 

@@ -14,15 +14,29 @@ import { SinglePlayerGuess } from "./SinglePlayerGuess";
 
 export function RegisterGuessesForm({ children }: IRegisterGuessesFormProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [error, setError] = useState("");
 
-  const { finishGuesses, sortPlayersAccordingToRound } = usePlayersContext();
+  const {
+    finishGuesses,
+    sortPlayersAccordingToRound,
+    players,
+    currentCardsCount,
+  } = usePlayersContext();
+
+  const sortedPlayers = sortPlayersAccordingToRound();
+  const totalGuesses = players.reduce((acc, player) => {
+    return acc + (player.currentGuess ?? 0);
+  }, 0);
 
   function handleFinishGuesses() {
+    if (totalGuesses === currentCardsCount) {
+      setError("Não posso permitir isso 😔");
+      return;
+    }
+
     finishGuesses();
     setDialogOpen(false);
   }
-
-  const sortedPlayers = sortPlayersAccordingToRound();
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -40,11 +54,17 @@ export function RegisterGuessesForm({ children }: IRegisterGuessesFormProps) {
             ))}
           </div>
 
-          <div className="mt-5">Os fodeníceos fazem 2 de 3</div>
+          <div className="mt-5">
+            Os fodeníceos fazem <b>{totalGuesses}</b> de {currentCardsCount}
+          </div>
 
           <StandardButton className="w-full mt-2" onClick={handleFinishGuesses}>
             A sorte está lançada
           </StandardButton>
+
+          {error && (
+            <div className="mt-1 text-sm text-error-red"> {error} </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -6,9 +6,10 @@ import { RegisterPlayersForm } from "./components/RegisterPlayersForm";
 import { PlayersListWithLives } from "./components/PlayersListWithLives";
 import { Button } from "@/components/ui/button";
 import { PlayersGuesses } from "./components/PlayersGuesses";
+import { StandardButton } from "./components/StandardButton";
 
 export default function Home() {
-  const { players } = usePlayersContext();
+  const { players, everybodyGuessed } = usePlayersContext();
 
   const clientPlayers = players ?? [];
 
@@ -30,6 +31,14 @@ export default function Home() {
         <div>
           <PlayersListWithLives />
           <PlayersGuesses />
+
+          {everybodyGuessed && (
+            <div className="mt-8">
+              <StandardButton>
+                Qual foi o resultado do fodódromo?
+              </StandardButton>
+            </div>
+          )}
         </div>
       )}
     </div>
