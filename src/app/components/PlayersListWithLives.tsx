@@ -9,7 +9,7 @@ export function PlayersListWithLives() {
     <div className="mt-10 border-1 border-main-border rounded-lg p-4 bg-main-bg">
       <div>Vida dos... fodelões 😩</div>
 
-      <div className="mt-4 flex gap-6 flex-wrap justify-around">
+      <div className="mt-4 flex gap-6 flex-wrap">
         {players.map((player) => (
           <div
             key={player.id}

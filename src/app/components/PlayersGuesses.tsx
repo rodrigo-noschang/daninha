@@ -32,7 +32,7 @@ export function PlayersGuesses() {
       </div>
 
       {everybodyGuessed && (
-        <div className="flex flex-wrap gap-3 mt-6 justify-around">
+        <div className="flex flex-wrap gap-3 mt-6">
           {sortedPlayers.map((player) => (
             <div
               key={player.id}
