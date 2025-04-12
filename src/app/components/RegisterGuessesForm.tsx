@@ -29,6 +29,7 @@ export function RegisterGuessesForm({ children }: IRegisterGuessesFormProps) {
   }, 0);
 
   function handleFinishGuesses() {
+    setError("");
     if (totalGuesses === currentCardsCount) {
       setError("Não posso permitir isso 😔");
       return;

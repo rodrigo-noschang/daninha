@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className="max-w-[450px] bg-linear-to-b from-[#3B3B3B] to-[#717070] px-4 pt-14 text-gray-200">
+    <html lang="pt-BR" className="flex justify-center">
+      <body className="w-dvw max-w-[450px] bg-linear-to-b from-[#3B3B3B] to-[#717070] px-4 pt-14 text-gray-200">
         <ContextProviders>{children}</ContextProviders>
       </body>
     </html>
