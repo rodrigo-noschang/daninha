@@ -41,6 +41,16 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-main-bg: #4A4A4A;
+  --color-main-border: #C0C0C0;
+  --color-content-box-bg: #7A7A7A;
+  --color-placeholder: #B6B6B6;
+  --color-input-bg: #313131;
+  --color-button-green: #4A9C40;
+  --color-button-green-hover: #3D9033;
+  --color-selected-player-green: #4A9C40;
+  --color-error-red: #ff4149;
 }
 
 :root {
