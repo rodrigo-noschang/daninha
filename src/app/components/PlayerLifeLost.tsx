@@ -7,14 +7,14 @@ export function PlayerLifeLost({ player }: IPlayerLifeLostProps) {
 
   function increaseLifeLost() {
     setPlayerLifeLost(playerLifeLost + 1);
-    player.livesLost = player.livesLost + 1;
+    player.livesLost = (player?.livesLost ?? 0) + 1;
   }
 
   function decreaseLifeLost() {
     if (playerLifeLost <= 0) return;
 
     setPlayerLifeLost(playerLifeLost - 1);
-    player.livesLost = player.livesLost - 1;
+    player.livesLost = (player?.livesLost ?? 0) - 1;
   }
 
   return (

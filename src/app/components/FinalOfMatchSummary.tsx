@@ -18,7 +18,7 @@ export function FinalOfMatchSummary() {
 
   const restPlayers = players
     .filter((player) => !losersAndWinnersIds.includes(player.id))
-    .sort((a, b) => (a.livesLost = b.livesLost));
+    .sort((a, b) => (a?.livesLost ?? 0) - (b?.livesLost ?? 0));
 
   function handleRestartGame() {
     startNewGame();
@@ -32,47 +32,53 @@ export function FinalOfMatchSummary() {
 
         <div className="text-lg"> Acabou o jogo negrada </div>
 
-        <div>
-          <div> Perdero </div>
-          <div className="flex gap-2">
-            {losers.map((loser) => (
-              <div
-                key={loser.id}
-                className={"px-4 py-1 border-2 rounded-md  bg-error-red"}
-              >
-                {loser.name} - {loser.livesLost}
-              </div>
-            ))}
+        {!!losers.length && (
+          <div>
+            <div> Perdero </div>
+            <div className="flex gap-2">
+              {losers.map((loser) => (
+                <div
+                  key={loser.id}
+                  className={"px-4 py-1 border-2 rounded-md  bg-error-red"}
+                >
+                  {loser.name} - {loser?.livesLost ?? 0}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div>
-          <div> Ganharo </div>
-          <div className="flex gap-2">
-            {winners.map((winner) => (
-              <div
-                key={winner.id}
-                className={"px-4 py-1 border-2 rounded-md  bg-button-green"}
-              >
-                {winner.name} - {winner.livesLost}
-              </div>
-            ))}
+        {!!winners.length && (
+          <div>
+            <div> Ganharo </div>
+            <div className="flex gap-2">
+              {winners.map((winner) => (
+                <div
+                  key={winner.id}
+                  className={"px-4 py-1 border-2 rounded-md  bg-button-green"}
+                >
+                  {winner.name} - {winner?.livesLost ?? 0}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div>
-          <div> Restoio </div>
-          <div className="flex gap-2">
-            {restPlayers.map((player) => (
-              <div
-                key={player.id}
-                className={"px-4 py-1 border-2 rounded-md  bg-content-box-bg"}
-              >
-                {player.name} - {player.livesLost}
-              </div>
-            ))}
+        {!!restPlayers.length && (
+          <div>
+            <div> Restoio </div>
+            <div className="flex gap-2">
+              {restPlayers.map((player) => (
+                <div
+                  key={player.id}
+                  className={"px-4 py-1 border-2 rounded-md  bg-content-box-bg"}
+                >
+                  {player.name} - {player.livesLost}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-4 flex justify-between">
           <StandardButton className="w-full" onClick={handleRestartGame}>

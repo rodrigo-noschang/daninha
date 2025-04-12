@@ -19,7 +19,7 @@ export function PlayersListWithLives() {
                 : "border-main-border"
             }`}
           >
-            {player.name} - {player.livesLost}
+            {player.name} - {player?.livesLost ?? 0}
           </div>
         ))}
       </div>

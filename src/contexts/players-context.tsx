@@ -132,7 +132,7 @@ export function PlayersContextProvider({ children }: IProps) {
 
   function saveLivesLostInRound(lostLives: IPlayerDTO[]) {
     const definedLosers = lostLives.filter((player) => {
-      return player.livesLost >= MAX_LIVES;
+      return (player?.livesLost ?? 0) >= MAX_LIVES;
     });
     if (definedLosers.length > 0) {
       setLosers(definedLosers);
@@ -200,11 +200,13 @@ export function PlayersContextProvider({ children }: IProps) {
   }
 
   function getWinners() {
+    const initialLifeCount = players[0]?.livesLost ?? MAX_LIVES;
+
     const lowestLivesLost = players.reduce((acc, player) => {
-      return player.livesLost < acc && player.livesLost < MAX_LIVES
+      return player?.livesLost < acc && player.livesLost < MAX_LIVES
         ? player.livesLost
         : acc;
-    }, Math.min(MAX_LIVES, players[0].livesLost));
+    }, Math.min(MAX_LIVES, initialLifeCount));
 
     const winners = players.filter(
       (player) => player.livesLost === lowestLivesLost
