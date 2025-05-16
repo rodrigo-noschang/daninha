@@ -51,6 +51,7 @@ export function RegisterPlayersForm({ children }: IRegisterPlayersFormProps) {
       livesLost: 0,
       currentGuess: 0,
       isLastWinner: false,
+      isLeading: false,
     };
 
     const newRanking: IRankingDTO = {

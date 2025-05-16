@@ -4,4 +4,5 @@ export interface IPlayerDTO {
   livesLost: number;
   currentGuess: number;
   isLastWinner: boolean;
+  isLeading?: boolean;
 }

@@ -83,7 +83,6 @@ export function PlayersContextProvider({ children }: IProps) {
   const [losers, setLosers] = useState<IPlayerDTO[]>([]);
   const [choseToRestart, setChoseToRestart] = useState(false);
 
-  console.log("🚀 ~ PlayersContextProvider ~ players:", players);
   const MAX_CARDS_ALLOWED = Math.floor(TOTAL_CARDS / players.length - 1);
 
   function addPlayer(player: IPlayerDTO) {
@@ -140,8 +139,36 @@ export function PlayersContextProvider({ children }: IProps) {
     const definedLosers = lostLives.filter((player) => {
       return (player?.livesLost ?? 0) >= MAX_LIVES;
     });
+
     if (definedLosers.length > 0) {
       setLosers(definedLosers);
+    }
+
+    let leaderPoints = players[0].livesLost;
+    let isAllTie = true;
+    let leadersCount = 0;
+
+    for (const player of lostLives) {
+      if (player.livesLost !== leaderPoints) {
+        isAllTie = false;
+      }
+
+      if (player.livesLost <= leaderPoints) {
+        leaderPoints = player.livesLost;
+      }
+    }
+
+    for (const player of lostLives) {
+      if (player.livesLost === leaderPoints) {
+        player.isLeading = true;
+        leadersCount++;
+      }
+    }
+
+    if (leadersCount >= Math.ceil(players.length / 2) || isAllTie) {
+      for (const player of lostLives) {
+        player.isLeading = false;
+      }
     }
 
     setPlayers(lostLives);
@@ -226,12 +253,7 @@ export function PlayersContextProvider({ children }: IProps) {
     setLosers([]);
 
     // update dealer
-    const currentDealerIndex = players.findIndex((player) => {
-      return player.id === currentDealer?.id;
-    });
-
-    const nextDealerIndex =
-      currentDealerIndex >= players.length - 1 ? 0 : currentDealerIndex + 1;
+    const nextDealerIndex = Math.floor(players.length * Math.random());
 
     const nextDealer = players[nextDealerIndex];
 
@@ -244,6 +266,7 @@ export function PlayersContextProvider({ children }: IProps) {
         currentGuess: 0,
         livesLost: 0,
         isLastWinner: winnerIds.includes(player.id),
+        isLeading: false,
       };
     });
 

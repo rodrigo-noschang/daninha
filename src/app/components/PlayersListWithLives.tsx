@@ -20,7 +20,7 @@ export function PlayersListWithLives() {
                 : currentDealer?.id === player.id
                 ? "border-button-green-hover"
                 : "border-main-border"
-            }`}
+            } ${player.isLeading ? "bg-leader-bg" : "bg-transparent"}`}
           >
             {player.isLastWinner && (
               <Crown
